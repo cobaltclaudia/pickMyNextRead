@@ -10,92 +10,37 @@ import SwiftSoup
 struct ContentView: View {
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Choose your next read")
-                .font(.headline)
-                .foregroundColor(.white)
-
-            Button(action: fetchMetaImage) {
-                Text("📚")
-                    .padding()
-                    .font(Font.system(size:80))
-                    .cornerRadius(10)
-            }
+        let goodreadsUrl = goodReadsLinkPath()
+        Text("Choose your next read")
+            .font(.headline)
+            .foregroundColor(.white)
+        Link(destination: URL(string: goodreadsUrl)!, label: {
+            Text("📚")
+                .padding()
+                .font(Font.system(size:80))
+                .cornerRadius(10)
+            })
         }
-        .padding()
-        .edgesIgnoringSafeArea(.all)
-    }
-
-    func openImageLink() {
-        if let url = URL(string: "https://www.example.com") {
-            UIApplication.shared.open(url)
-        }
-    }
-}
-
-
-//@main
-struct ImageLinkApp: App {
-
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .preferredColorScheme(.dark)
-                .background(Color.black)
-                .edgesIgnoringSafeArea(.all)
-        }
+    
+    func goodReadsLinkPath() -> String {
+        let baseLink = "https://www.goodreads.com/review/list/"
+         let and = "&"
+         let uniqueId = "102281322-"
+         let username = "cobalt-claudia?"
+         let order = "order=a"
+         let per_page = "per_page=1"
+         let shelf = "shelf=to-read"
+         let sort = "sort=random"
+         let view = "view=covers"
+         let completePath = baseLink + uniqueId + and + username + and + order + and + per_page + and + shelf + and + sort + and + and + view
+        print(completePath)
+        return completePath
     }
     
-}
-
-
-struct MyViewControllerWrapper: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> UIViewController {
-        return ViewController() // A UIKit ViewController
-    }
-    
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        // Update if needed
-    }
-}
-
-func fetchMetaImage() {
-    let urlString = "LINK HERE" // Hardcoded URL
-    
-    guard let url = URL(string: urlString) else {
-        print("Invalid URL")
-        return
-    }
-    
-    URLSession.shared.dataTask(with: url) { data, _, _ in
-        guard let data = data, let html = String(data: data, encoding: .utf8) else {
-            print("Failed to fetch HTML")
-            return
-        }
+    func parseHtml(html: String){
+        print(html)
         
-        if let imageUrl = try? SwiftSoup.parse(html).select("meta[property='og:image']").attr("content"),
-           !imageUrl.isEmpty {
-//            print("Found image URL: \(imageUrl)")
-//                AsyncImage(url: URL(string:imageUrl)) { phase in  // Unused
-//                    switch phase {
-//                    case .empty:
-//                        ProgressView()
-//                    case .success(let image):
-//                        image.resizable()
-//                            .scaledToFit()
-//                    case .failure:
-//                        Image(systemName: "photo")
-//                            .resizable()
-//                            .scaledToFit()
-//                    @unknown default:
-//                        EmptyView()
-//                    }
-//                }
-//
-//                .frame(width: 200, height: 200)
-            
-        } else {
-            print("No og:image found")
-        }
-    }.resume()
+    }
+    
+
 }

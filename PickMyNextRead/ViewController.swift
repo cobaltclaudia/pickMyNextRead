@@ -9,8 +9,8 @@ import UIKit
 import SwiftSoup
 
 class ViewController: UIViewController {
-    
-    let url = "LINK HERE"
 
+    // WKWebView?
+    // viewDidLoad?
 }
 
