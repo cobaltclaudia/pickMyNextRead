@@ -16,17 +16,21 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack {
-            Button(action: {
-                reloadTrigger = UUID() // Change state to trigger reload
-            }) {
-                Text("📚")
-            }
-                // loads page in app
-            WebView(url: URL(string:goodReadsLinkPath())!, reloadTrigger: reloadTrigger)
-                    .frame(height: 400)
-            }
-            // TODO display nav
-        }.navigationBarTitle(Text("Home"))
+                Button(action: {
+                    reloadTrigger = UUID() // Change state to trigger reload
+                    showWebView = true
+                }) {
+                    Text("Pick My Next Read 📚").font(.title).fontWeight(.regular).foregroundColor(.white).multilineTextAlignment(.center)
+                }
+                if showWebView {
+                    // loads page in app
+                WebView(url: URL(string:goodReadsLinkPath())!, reloadTrigger: reloadTrigger)
+                        .frame(width: 200.0, height: 350.0)
+                    
+
+                }}
+      
+        }.navigationBarTitle(Text("Home")).foregroundColor(.white)
             
     }
 }
