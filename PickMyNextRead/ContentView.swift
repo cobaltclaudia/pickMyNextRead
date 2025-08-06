@@ -24,8 +24,12 @@ struct ContentView: View {
                 }
                 if showWebView {
                     // loads page in app
+                    let imageCheck = imageCheck(from: goodReadsLinkPath())
+                    Text(imageCheck)
+                    // TODO connect
                 WebView(url: URL(string:goodReadsLinkPath())!, reloadTrigger: reloadTrigger)
                         .frame(width: 200.0, height: 350.0)
+                    
                     
 
                 }}
@@ -68,3 +72,32 @@ struct WebView: UIViewRepresentable {
     }
 }
 
+func imageCheck(from urlString: String) -> String {
+    guard let url = URL(string: goodReadsLinkPath()) else { return "no"}
+    var found = ""
+
+    URLSession.shared.dataTask(with: url) { data, _, error in
+        if let data = data, let html = String(data: data, encoding: .utf8) {
+            do {
+                let doc = try SwiftSoup.parse(html)
+                let images = try doc.select("img")
+
+                for img in images {
+                    let src = try img.attr("src")
+                    for src in src.split(separator: " ") {
+                        if src.lowercased().contains("books") {
+                                print("Found the word 'books'!")
+                            print("Found book image URL: \(src)")
+                            found = "Found image URL: \(src)"
+                            break
+                            }
+                    }
+                    
+                }
+            } catch {
+                print("Error parsing HTML: \(error)")
+            }
+        }
+    }.resume()
+    return found
+}
