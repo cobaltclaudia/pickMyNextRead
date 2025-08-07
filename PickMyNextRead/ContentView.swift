@@ -21,17 +21,15 @@ struct ContentView: View {
                     showWebView = true
                 }) {
                     Text("Pick My Next Read 📚").font(.title).fontWeight(.regular).foregroundColor(.white).multilineTextAlignment(.center)
+                    
                 }
+                let imageCheck = imageCheck(from: goodReadsLinkPath())
+                Text("This is the selected book: " + imageCheck)
                 if showWebView {
                     // loads page in app
-                    let imageCheck = imageCheck(from: goodReadsLinkPath())
-                    Text(imageCheck)
                     // TODO connect
-                WebView(url: URL(string:goodReadsLinkPath())!, reloadTrigger: reloadTrigger)
+                    WebView(url: URL(string:goodReadsLinkPath())!, reloadTrigger: reloadTrigger)
                         .frame(width: 200.0, height: 350.0)
-                    
-                    
-
                 }}
       
         }.navigationBarTitle(Text("Home")).foregroundColor(.white)
@@ -74,7 +72,7 @@ struct WebView: UIViewRepresentable {
 
 func imageCheck(from urlString: String) -> String {
     guard let url = URL(string: goodReadsLinkPath()) else { return "no"}
-    var found = ""
+    var selectedBook = "this isnt working"
 
     URLSession.shared.dataTask(with: url) { data, _, error in
         if let data = data, let html = String(data: data, encoding: .utf8) {
@@ -85,19 +83,23 @@ func imageCheck(from urlString: String) -> String {
                 for img in images {
                     let src = try img.attr("src")
                     for src in src.split(separator: " ") {
-                        if src.lowercased().contains("books") {
-                                print("Found the word 'books'!")
+                        if src.lowercased().contains("compressed.photo.goodreads.com/books") {
+                                print("Found the words 'compressed.photo.goodreads.com/books'!")
                             print("Found book image URL: \(src)")
-                            found = "Found image URL: \(src)"
+                            selectedBook = "\(src)"
+                            print("break 1")
                             break
                             }
+                        print("break 2")
+                        break
                     }
-                    
                 }
+                print("Final selection in loop " + selectedBook)
             } catch {
                 print("Error parsing HTML: \(error)")
             }
         }
     }.resume()
-    return found
+    print("Final selection before return: " + selectedBook)
+    return selectedBook
 }

@@ -9,8 +9,14 @@ import UIKit
 import SwiftSoup
 
 class ViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-    // WKWebView?
-    // viewDidLoad?
+        let imageView = UIImageView(frame: CGRect(x: 50, y: 100, width: 200, height: 350))
+        imageView.contentMode = .scaleAspectFit
+        view.addSubview(imageView)
+
+       
+    }
 }
 
