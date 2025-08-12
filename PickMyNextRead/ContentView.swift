@@ -17,17 +17,20 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 Button(action: {
-                    reloadTrigger = UUID() // Change state to trigger reload
+                    reloadTrigger = UUID()
                     showWebView = true
+                  
+                    // TODO display image in app
+                    imageCheck(from: goodReadsLinkPath()) { selected in
+                        print("Selected book: \(selected)")
+                    }
                 }) {
                     Text("Pick My Next Read 📚").font(.title).fontWeight(.regular).foregroundColor(.white).multilineTextAlignment(.center)
                     
                 }
-                let imageCheck = imageCheck(from: goodReadsLinkPath())
-                Text("This is the selected book: " + imageCheck)
+
                 if showWebView {
-                    // loads page in app
-                    // TODO connect
+                   // TODO remove placeholder
                     WebView(url: URL(string:goodReadsLinkPath())!, reloadTrigger: reloadTrigger)
                         .frame(width: 200.0, height: 350.0)
                 }}
@@ -70,11 +73,17 @@ struct WebView: UIViewRepresentable {
     }
 }
 
-func imageCheck(from urlString: String) -> String {
-    guard let url = URL(string: goodReadsLinkPath()) else { return "no"}
-    var selectedBook = "this isnt working"
+
+func imageCheck(from urlString: String, completion: @escaping (String) -> Void) {
+    print("IN IMAGE CHECK")
+    guard let url = URL(string: goodReadsLinkPath()) else {
+        completion("no")
+        return
+    }
 
     URLSession.shared.dataTask(with: url) { data, _, error in
+        var selectedBook = "this isn't working"
+
         if let data = data, let html = String(data: data, encoding: .utf8) {
             do {
                 let doc = try SwiftSoup.parse(html)
@@ -82,24 +91,24 @@ func imageCheck(from urlString: String) -> String {
 
                 for img in images {
                     let src = try img.attr("src")
-                    for src in src.split(separator: " ") {
-                        if src.lowercased().contains("compressed.photo.goodreads.com/books") {
-                                print("Found the words 'compressed.photo.goodreads.com/books'!")
-                            print("Found book image URL: \(src)")
-                            selectedBook = "\(src)"
-                            print("break 1")
-                            break
-                            }
-                        print("break 2")
-                        break
+                    for part in src.split(separator: " ") {
+                        if part.lowercased().contains("compressed.photo.goodreads.com/books") {
+                            print("Found book image URL: \(part)")
+                            selectedBook = String(part)
+                            print("Assisgning selected book: "+selectedBook)
+                            completion(selectedBook)
+                            return // stop further processing
+                        }
                     }
                 }
-                print("Final selection in loop " + selectedBook)
+                completion(selectedBook)
             } catch {
                 print("Error parsing HTML: \(error)")
+                completion("error")
             }
+        } else {
+            print("Data or HTML conversion failed")
+            completion("error")
         }
     }.resume()
-    print("Final selection before return: " + selectedBook)
-    return selectedBook
 }
