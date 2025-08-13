@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// TODO fix error
 @main
 struct PickMyNextReadApp: App {
     var body: some Scene {

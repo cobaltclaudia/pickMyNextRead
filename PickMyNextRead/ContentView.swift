@@ -11,32 +11,47 @@ import WebKit
 
 // CONTENT VIEW
 struct ContentView: View {
-    @State private var showWebView = false
     @State private var reloadTrigger = UUID()
+    @State private var showWebView = false
+    @State private var imageURL: URL? = nil
+    
     var body: some View {
-        NavigationView {
-            VStack {
-                Button(action: {
-                    reloadTrigger = UUID()
-                    showWebView = true
-                  
-                    // TODO display image in app
-                    imageCheck(from: goodReadsLinkPath()) { selected in
-                        print("Selected book: \(selected)")
+        VStack(spacing: 20) {
+            Button(action: {
+                reloadTrigger = UUID()
+                showWebView = true
+                
+                imageCheck(from: goodReadsLinkPath()) { selected in
+                    print("Selected book: \(selected)")
+                    if let url = URL(string: selected) {
+                        DispatchQueue.main.async {
+                            imageURL = url
+                        }
                     }
-                }) {
-                    Text("Pick My Next Read 📚").font(.title).fontWeight(.regular).foregroundColor(.white).multilineTextAlignment(.center)
-                    
                 }
-
-                if showWebView {
-                   // TODO remove placeholder
-                    WebView(url: URL(string:goodReadsLinkPath())!, reloadTrigger: reloadTrigger)
-                        .frame(width: 200.0, height: 350.0)
-                }}
-      
-        }.navigationBarTitle(Text("Home")).foregroundColor(.white)
+            }) {
+                Text("Pick My Next Read 📚")
+                    .font(.title)
+                    .fontWeight(.regular)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .padding()
+                    .cornerRadius(10)
+            }
             
+            if let url = imageURL {
+                AsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 200, height: 350)
+                        .cornerRadius(8)
+                } placeholder: {
+                    ProgressView()
+                }
+            }
+        }
+        .padding()
     }
 }
     
@@ -49,7 +64,7 @@ func goodReadsLinkPath() -> String {
     let sort = "sort=random"
     let view = "view=covers"
     
-    //modifiable parameters
+    //TODO change this
     let uniqueId = "102281322-"
     let username = "cobalt-claudia?"
     
