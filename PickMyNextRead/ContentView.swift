@@ -69,28 +69,12 @@ func goodReadsLinkPath() -> String {
     let username = "cobalt-claudia?"
     
     let completePath = baseLink + uniqueId + and + username + and + order + and + per_page + and + shelf + and + sort + and + and + view
-    print(completePath)
     return completePath
 }
     
-    // WEBVIEW
-struct WebView: UIViewRepresentable {
-    let url: URL
-    let reloadTrigger: UUID
-    
-    func makeUIView(context: Context) -> WKWebView {
-        return WKWebView()
-    }
-    
-    func updateUIView(_ uiView: WKWebView, context: Context) {
-        let request = URLRequest(url: url)
-        uiView.load(request)
-    }
-}
 
 
 func imageCheck(from urlString: String, completion: @escaping (String) -> Void) {
-    print("IN IMAGE CHECK")
     guard let url = URL(string: goodReadsLinkPath()) else {
         completion("no")
         return
@@ -108,9 +92,7 @@ func imageCheck(from urlString: String, completion: @escaping (String) -> Void) 
                     let src = try img.attr("src")
                     for part in src.split(separator: " ") {
                         if part.lowercased().contains("compressed.photo.goodreads.com/books") {
-                            print("Found book image URL: \(part)")
                             selectedBook = String(part)
-                            print("Assisgning selected book: "+selectedBook)
                             completion(selectedBook)
                             return // stop further processing
                         }
